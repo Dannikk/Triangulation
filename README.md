@@ -42,3 +42,8 @@ by running in the console:
 ```
 python main.py my_input.txt my_output.txt -show
 ```
+
+## Contacts:
+
+* Email: danilov.na@edu.spbstu.ru
+* Telegram: [@dannik0103](https://t.me/dannik0103)
