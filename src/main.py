@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-from geometry import is_it_convex, is_it_ear
+from geometry import is_it_convex, is_it_ear, parallelogram_square
 from doubly_connected_vertex_list import DCVL, Vertex, Direction
 import matplotlib.pyplot as plt
 from random import randrange
@@ -32,7 +32,7 @@ def read_vertices(file_name: str):
     if vert_counter < 3:
         return None, Message.NOT_POLYGON
 
-    if right_vertex.prev.get_y() < right_vertex.next_vertex.get_y():
+    if parallelogram_square(right_vertex.prev.point, right_vertex.point, right_vertex.next_vertex.point) > 0:
         dcel.set_direction(Direction.COUNTERCLOCKWISE)
     else:
         dcel.set_direction(Direction.CLOCKWISE)
