@@ -54,6 +54,13 @@ class DCVL:
             v = v.next_vertex
         print()
 
+    def print_list_rev(self):
+        v = self.current
+        for _ in range(self.count):
+            print(v.point, end='')
+            v = v.prev
+        print()
+
 
 class Vertex:
 

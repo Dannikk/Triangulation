@@ -4,7 +4,6 @@ from geometry import is_it_convex, is_it_ear, parallelogram_square
 from doubly_connected_vertex_list import DCVL, Vertex, Direction
 import matplotlib.pyplot as plt
 from random import randrange
-
 from enum import Enum
 
 
@@ -22,9 +21,13 @@ def read_vertices(file_name: str):
     right_vertex = v
     dcel.add_vertex(v)
     vert_counter = 1
+
+    # tmp_p = [point]
+
     for string in file:
         point = np.array(list(map(lambda x: float(x), string.split())))
         u = Vertex(point)
+        # tmp_p.append(point)
         dcel.add_vertex(u)
         right_vertex = u if u.get_x() > right_vertex.get_x() else right_vertex
         vert_counter += 1
@@ -36,6 +39,13 @@ def read_vertices(file_name: str):
         dcel.set_direction(Direction.COUNTERCLOCKWISE)
     else:
         dcel.set_direction(Direction.CLOCKWISE)
+
+    # tmp_p = np.array(tmp_p)
+    # fig = plt.figure(figsize=(9, 12))
+    # ax = fig.add_subplot(111)
+    # ax.fill(tmp_p[:, 0], tmp_p[:, 1], color='red')
+    # plt.show()
+
     return dcel, Message.POlYGON_READ
 
 

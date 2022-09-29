@@ -13,8 +13,8 @@ def parallelogram_square(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> float:
 
 
 def is_point_in_triangle(p: np.ndarray, a: np.ndarray, b: np.ndarray, c: np.ndarray, dir_coef: int = 1) -> bool:
-    if parallelogram_square(p, a, b)*dir_coef > 0 and parallelogram_square(p, b, c)*dir_coef > 0 and \
-            parallelogram_square(p, c, a)*dir_coef > 0:
+    if parallelogram_square(p, a, b)*dir_coef >= 0 and parallelogram_square(p, b, c)*dir_coef >= 0 and \
+            parallelogram_square(p, c, a)*dir_coef >= 0:
         return True
     else:
         return False
