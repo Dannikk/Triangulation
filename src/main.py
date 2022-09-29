@@ -25,8 +25,8 @@ def read_vertices(file_name: str):
     for string in file:
         point = np.array(list(map(lambda x: float(x), string.split())))
         u = Vertex(point)
-        right_vertex = u if u.get_x() > right_vertex.get_x() else right_vertex
         dcel.add_vertex(u)
+        right_vertex = u if u.get_x() > right_vertex.get_x() else right_vertex
         vert_counter += 1
     file.close()
     if vert_counter < 3:

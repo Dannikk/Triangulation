@@ -23,8 +23,9 @@ class DCVL:
             self.count += 1
         else:
             next_v = self.current.next_vertex
-            vertex.next_vertex = next_v if next_v != self.tail else self.tail
+            vertex.next_vertex = next_v
             vertex.prev = self.current
+            next_v.prev = vertex
             self.current.next_vertex = vertex
             self.current = vertex
             self.count += 1
