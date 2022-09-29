@@ -5,6 +5,13 @@ from doubly_connected_vertex_list import DCVL, Vertex, Direction
 import matplotlib.pyplot as plt
 from random import randrange
 
+from enum import Enum
+
+
+class Message(Enum):
+    POlYGON_READ = 'Polygon vertices read'
+    NOT_POLYGON = 'The number of vertices is less than 3'
+
 
 def read_vertices(file_name: str):
     file = open(file_name, 'r')
@@ -22,14 +29,14 @@ def read_vertices(file_name: str):
         dcel.add_vertex(u)
         vert_counter += 1
     file.close()
-    if vert_counter <= 3:
-        return None, 'The number of vertices is less than or equal to 3'
+    if vert_counter < 3:
+        return None, Message.NOT_POLYGON
 
     if right_vertex.prev.get_y() < right_vertex.next_vertex.get_y():
         dcel.set_direction(Direction.COUNTERCLOCKWISE)
     else:
         dcel.set_direction(Direction.CLOCKWISE)
-    return dcel, 'Polygon vertices read'
+    return dcel, Message.POlYGON_READ
 
 
 def triangulation(dcvl: DCVL):
@@ -64,19 +71,20 @@ if __name__ == "__main__":
     print(f"Visualize triangulation in matplotlib:\t{args.show}")
 
     dcvl, msg = read_vertices(input_file)
-    print(msg)
+    print(msg.value)
 
-    if show:
-        fig = plt.figure(figsize=(9, 12))
-        ax = fig.add_subplot(111)
-    file = open(output_file, 'w')
-    for m, n, k in triangulation(dcvl):
-        file.write(f'{m[0]} {m[1]} {n[0]} {n[1]} {k[0]} {k[1]}\n')
+    if msg == Message.POlYGON_READ:
         if show:
-            trian = np.column_stack((m, n, k))
-            color = [randrange(0, 255, 2)/255 for _ in range(3)]
-            ax.fill(trian[0], trian[1], color=color)
-    file.close()
-    if show:
-        plt.grid()
-        plt.show()
+            fig = plt.figure(figsize=(9, 12))
+            ax = fig.add_subplot(111)
+        file = open(output_file, 'w')
+        for m, n, k in triangulation(dcvl):
+            file.write(f'{m[0]} {m[1]} {n[0]} {n[1]} {k[0]} {k[1]}\n')
+            if show:
+                trian = np.column_stack((m, n, k))
+                color = [randrange(0, 255, 2)/255 for _ in range(3)]
+                ax.fill(trian[0], trian[1], color=color)
+        file.close()
+        if show:
+            plt.grid()
+            plt.show()
