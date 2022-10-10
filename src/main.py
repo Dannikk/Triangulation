@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-from geometry import is_it_convex, is_it_ear, parallelogram_square
+from geometry import is_it_convex, is_it_ear, int_parallelogram_square
 from doubly_connected_vertex_list import DCVL, Vertex, Direction
 import matplotlib.pyplot as plt
 from random import randrange
@@ -12,9 +12,21 @@ class Message(Enum):
     NOT_POLYGON = 'The number of vertices is less than 3'
 
 
+def get_direction(a: Vertex, b: Vertex, c: Vertex) -> Direction:
+    par_square = int_parallelogram_square(a.point, b.point, c.point)
+    # if vertices on the same line
+    while par_square == 0:
+        c = c.next_vertex
+        par_square = int_parallelogram_square(a.point, b.point, c.point)
+    if par_square > 0:
+        return Direction.COUNTERCLOCKWISE
+    else:
+        return Direction.CLOCKWISE
+
+
 def read_vertices(file_name: str):
     file = open(file_name, 'r')
-    point = np.array(list(map(lambda x: float(x), file.readline().split())))
+    point = np.array(list(map(lambda x: int(x), file.readline().split())))
     dcel = DCVL()
 
     v = Vertex(point)
@@ -25,7 +37,7 @@ def read_vertices(file_name: str):
     # tmp_p = [point]
 
     for string in file:
-        point = np.array(list(map(lambda x: float(x), string.split())))
+        point = np.array(list(map(lambda x: int(x), string.split())))
         u = Vertex(point)
         # tmp_p.append(point)
         dcel.add_vertex(u)
@@ -35,30 +47,36 @@ def read_vertices(file_name: str):
     if vert_counter < 3:
         return None, Message.NOT_POLYGON
 
-    if parallelogram_square(right_vertex.prev.point, right_vertex.point, right_vertex.next_vertex.point) > 0:
-        dcel.set_direction(Direction.COUNTERCLOCKWISE)
-    else:
-        dcel.set_direction(Direction.CLOCKWISE)
+    # if int_parallelogram_square(right_vertex.prev.point, right_vertex.point, right_vertex.next_vertex.point) > 0:
+    #     dcel.set_direction(Direction.COUNTERCLOCKWISE)
+    # else:
+    #     dcel.set_direction(Direction.CLOCKWISE)
+    dcel.set_direction(get_direction(right_vertex.prev, right_vertex, right_vertex.next_vertex))
 
     # tmp_p = np.array(tmp_p)
     # fig = plt.figure(figsize=(9, 12))
     # ax = fig.add_subplot(111)
     # ax.fill(tmp_p[:, 0], tmp_p[:, 1], color='red')
+    # plt.grid()
+    # dcel.print_list()
     # plt.show()
-
     return dcel, Message.POlYGON_READ
 
 
 def triangulation(dcvl: DCVL):
 
     vertex = dcvl.current
+    # counter_  = 0
     while dcvl.count > 3:
         if is_it_convex(vertex, dcvl) and is_it_ear(vertex, dcvl):
+            # print(vertex.prev.point, vertex.point, vertex.next_vertex.point)
+            # counter_ += 1
+            # print(dcvl.count)
             yield vertex.prev.point, vertex.point, vertex.next_vertex.point
             vertex = dcvl.delete_vertex()
-            if is_it_ear(vertex, dcvl) and is_it_ear(vertex, dcvl):
+            if is_it_convex(vertex, dcvl) and is_it_ear(vertex, dcvl):
                 continue
-            elif is_it_ear(vertex.next_vertex, dcvl) and is_it_ear(vertex.next_vertex, dcvl):
+            elif is_it_convex(vertex.next_vertex, dcvl) and is_it_ear(vertex.next_vertex, dcvl):
                 vertex = dcvl.get_next()
                 continue
 
